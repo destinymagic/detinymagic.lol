@@ -31,7 +31,7 @@ const BlogItem = ({ post }) => {
         </h2>
 
         <div className='mb-4 text-sm text-gray-700 dark:text-gray-300'>
-          on {post.date?.start_date || post.createdTime}
+          {post.date?.start_date || post.createdTime}
           <TwikooCommentCount post={post} className='pl-1' />
           {post.category && (
             <>
