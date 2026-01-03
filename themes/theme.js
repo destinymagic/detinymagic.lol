@@ -66,7 +66,7 @@ export const getBaseLayoutByTheme = theme => {
   if (!isDefaultTheme) {
     return dynamic(
       () => import(`@/themes/${theme}`).then(m => m['LayoutBase']),
-      { ssr: true }
+      { ssr: true, loading: () => <div className="w-full h-screen flex justify-center items-center">Loading theme...</div> }
     )
   }
 
@@ -108,7 +108,7 @@ export const useLayoutByTheme = ({ layoutName, theme }) => {
     }
     return dynamic(
       () => import(`@/themes/${themeQuery}`).then(m => loadThemeComponents(m)),
-      { ssr: true }
+      { ssr: true, loading: () => <div className="w-full h-screen flex justify-center items-center">Loading theme...</div> }
     )
   }
 
@@ -212,7 +212,12 @@ export function isPreferDark() {
  * @returns {*}
  */
 export const loadDarkModeFromLocalStorage = () => {
-  return localStorage.getItem('darkMode')
+  try {
+    return localStorage.getItem('darkMode')
+  } catch (e) {
+    console.error('Error reading dark mode from localStorage:', e)
+    return null
+  }
 }
 
 /**
@@ -220,5 +225,9 @@ export const loadDarkModeFromLocalStorage = () => {
  * @param newTheme
  */
 export const saveDarkModeToLocalStorage = newTheme => {
-  localStorage.setItem('darkMode', newTheme)
+  try {
+    localStorage.setItem('darkMode', newTheme)
+  } catch (e) {
+    console.error('Error saving dark mode to localStorage:', e)
+  }
 }

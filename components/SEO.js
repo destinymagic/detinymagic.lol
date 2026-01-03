@@ -1,9 +1,7 @@
 import { siteConfig } from '@/lib/config'
-import { useGlobal } from '@/lib/global'
-import { loadExternalResource } from '@/lib/utils'
-import Head from 'next/head'
+import BLOG from '@/blog.config'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import Head from 'next/head'
 
 /**
  * 页面的Head头，有用于SEO

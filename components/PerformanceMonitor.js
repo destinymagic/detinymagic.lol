@@ -32,6 +32,12 @@ const PerformanceMonitor = () => {
         case 'CLS':
           isOverBudget = value > budget.CLS
           break
+        case 'INP':
+          isOverBudget = value > budget.INP
+          break
+        case 'TTFB':
+          isOverBudget = value > budget.TTFB
+          break
       }
 
       // 控制台输出性能指标
@@ -52,12 +58,16 @@ const PerformanceMonitor = () => {
     }
 
     // 动态导入web-vitals库
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB, getINP }) => {
       getCLS(reportWebVitals)
       getFID(reportWebVitals)
       getFCP(reportWebVitals)
       getLCP(reportWebVitals)
       getTTFB(reportWebVitals)
+      // 只在支持的情况下获取INP
+      if (getINP) {
+        getINP(reportWebVitals)
+      }
     }).catch(err => {
       console.warn('Failed to load web-vitals:', err)
     })
@@ -72,12 +82,53 @@ const PerformanceMonitor = () => {
       const slowResources = resources.filter(resource => resource.duration > 1000)
       
       if (slowResources.length > 0 && process.env.NODE_ENV === 'development') {
-        console.warn('[Performance] Slow resources detected:', slowResources)
+        console.warn('[Performance] Slow resources detected:', slowResources.map(r => ({
+          name: r.name.split('/').pop(),
+          duration: Math.round(r.duration)
+        })))
       }
     }
 
     // 延迟执行资源监控
     setTimeout(monitorResourceTiming, 5000)
+
+    // 监控内存使用情况
+    if (window.performance && window.performance.memory) {
+      const checkMemoryUsage = () => {
+        if (process.env.NODE_ENV === 'development') {
+          const mem = window.performance.memory
+          console.log(`[Memory] Used: ${(mem.usedJSHeapSize / 1048576).toFixed(2)} MB, 
+                      Total: ${(mem.totalJSHeapSize / 1048576).toFixed(2)} MB, 
+                      Limit: ${(mem.jsHeapSizeLimit / 1048576).toFixed(2)} MB`)
+        }
+      }
+      setInterval(checkMemoryUsage, 30000) // 每30秒检查一次
+    }
+
+    // 监控长任务
+    if ('measureMemory' in window.performance) {
+      // 支持内存测量
+      window.setInterval(() => {
+        performance.measureMemory().then((result) => {
+          if (process.env.NODE_ENV === 'development') {
+            console.log(`[Memory] Bytes: ${JSON.stringify(result, null, 2)}`)
+          }
+        })
+      }, 60000) // 每分钟测量一次
+    }
+
+    // 监控长任务
+    if ('PerformanceObserver' in window) {
+      const observer = new PerformanceObserver(list => {
+        for (const entry of list.getEntries()) {
+          if (entry.duration > 50) {
+            // 长任务，超过50ms
+            console.warn(`[Performance] Long task detected: ${entry.duration}ms`)
+          }
+        }
+      })
+      observer.observe({ entryTypes: ['longtask'] })
+    }
 
   }, [])
 

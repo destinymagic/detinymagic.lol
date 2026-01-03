@@ -1,46 +1,74 @@
-import { loadExternalResource } from '@/lib/utils'
-import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 
 /**
- * 加载进度条
- * NProgress实现
+ * 页面加载进度组件
+ * 提供更流畅的加载体验
  */
-export default function LoadingProgress() {
-  const router = useRouter()
-  const [NProgress, setNProgress] = useState(null)
-  // 加载进度条
+const LoadingProgress = () => {
+  const [loading, setLoading] = useState(false)
+  const [progress, setProgress] = useState(0)
+
   useEffect(() => {
-    loadExternalResource(
-      'https://cdnjs.snrat.com/ajax/libs/nprogress/0.2.0/nprogress.min.js',
-      'js'
-    ).then(() => {
-      if (window.NProgress) {
-        setNProgress(window.NProgress)
-        // 调速
-        window.NProgress.settings.minimun = 0.1
-        loadExternalResource(
-          'https://cdnjs.snrat.com/ajax/libs/nprogress/0.2.0/nprogress.min.css',
-          'css'
-        )
-      }
-    })
+    // 模拟加载进度
+    let progressTimer
+    let finishTimer
 
-    const handleStart = url => {
-      NProgress?.start()
+    const startLoading = () => {
+      setLoading(true)
+      setProgress(10)
+      
+      progressTimer = setInterval(() => {
+        setProgress(prev => {
+          // 模拟逐渐增加的进度，但故意不达到100%，直到完成
+          const newProgress = prev + Math.floor(Math.random() * 10)
+          return newProgress > 80 ? 80 : newProgress
+        })
+      }, 300)
     }
 
-    const handleStop = () => {
-      NProgress?.done()
+    const finishLoading = () => {
+      setProgress(100)
+      finishTimer = setTimeout(() => {
+        setLoading(false)
+        clearInterval(progressTimer)
+      }, 300)
     }
 
-    router.events.on('routeChangeStart', handleStart)
-    router.events.on('routeChangeError', handleStop)
-    router.events.on('routeChangeComplete', handleStop)
+    // 监听路由变化事件
+    const handleStart = () => startLoading()
+    const handleComplete = () => finishLoading()
+
+    window.addEventListener('beforeunload', handleStart)
+    window.addEventListener('load', handleComplete)
+    
+    // 如果页面已经加载完成，则直接完成进度
+    if (document.readyState === 'complete') {
+      handleComplete()
+    }
+
     return () => {
-      router.events.off('routeChangeStart', handleStart)
-      router.events.off('routeChangeComplete', handleStop)
-      router.events.off('routeChangeError', handleStop)
+      window.removeEventListener('beforeunload', handleStart)
+      window.removeEventListener('load', handleComplete)
+      clearInterval(progressTimer)
+      clearTimeout(finishTimer)
     }
-  }, [router])
+  }, [])
+
+  if (!loading) {
+    return null
+  }
+
+  return (
+    <div 
+      className="fixed top-0 left-0 right-0 h-1 z-50 transition-all duration-300"
+      style={{ backgroundColor: 'rgba(59, 130, 246, 0.5)' }}
+    >
+      <div
+        className="h-full bg-blue-500 transition-all duration-300 ease-out"
+        style={{ width: `${progress}%` }}
+      />
+    </div>
+  )
 }
+
+export default LoadingProgress

@@ -42,6 +42,8 @@ module.exports = {
     FCP: 1800, // First Contentful Paint (ms)
     LCP: 2500, // Largest Contentful Paint (ms)
     FID: 100,  // First Input Delay (ms)
-    CLS: 0.1   // Cumulative Layout Shift
+    CLS: 0.1,  // Cumulative Layout Shift
+    INP: 200,  // Interaction to Next Paint (ms) - 新指标
+    TTFB: 800   // Time to First Byte (ms)
   }
 }

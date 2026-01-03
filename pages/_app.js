@@ -1,74 +1,76 @@
-// import '@/styles/animate.css' // @see https://animate.style/
 import '@/styles/globals.css'
 import '@/styles/utility-patterns.css'
-
-// core styles shared by all of react-notion-x (required)
-import '@/styles/notion.css' //  重写部分notion样式
+import '@/styles/prism.css'
+import '@/styles/notion.css' // 重写部分notion样式
 import 'react-notion-x/src/styles.css' // 原版的react-notion-x
 
-import useAdjustStyle from '@/hooks/useAdjustStyle'
-import { GlobalContextProvider } from '@/lib/global'
-import { getBaseLayoutByTheme } from '@/themes/theme'
 import { useRouter } from 'next/router'
-import { useCallback, useMemo } from 'react'
-import { getQueryParam } from '../lib/utils'
-
-// 各种扩展插件 这个要阻塞引入
-import BLOG from '@/blog.config'
-import ExternalPlugins from '@/components/ExternalPlugins'
-import SEO from '@/components/SEO'
-import { zhCN } from '@clerk/localizations'
+import { useEffect, useMemo } from 'react'
 import dynamic from 'next/dynamic'
-// import { ClerkProvider } from '@clerk/nextjs'
-const ClerkProvider = dynamic(() =>
-  import('@clerk/nextjs').then(m => m.ClerkProvider)
-)
+import { GlobalContextProvider } from '@/lib/global'
+import { CacheProvider } from '@/components/CacheProvider'
+import { LoadingProgress } from '@/components/LoadingProgress'
+import BLOG from '@/blog.config'
+import { siteConfig } from '@/lib/config'
+import { Analytics } from '@vercel/analytics/react'
 
-/**
- * App挂载DOM 入口文件
- * @param {*} param0
- * @returns
- */
-const MyApp = ({ Component, pageProps }) => {
-  // 一些可能出现 bug 的样式，可以统一放入该钩子进行调整
-  useAdjustStyle()
+// 动态导入性能监控组件
+const PerformanceMonitor = dynamic(() => import('@/components/PerformanceMonitor'), {
+  ssr: false
+})
 
-  const route = useRouter()
-  const theme = useMemo(() => {
-    return (
-      getQueryParam(route.asPath, 'theme') ||
-      pageProps?.NOTION_CONFIG?.THEME ||
-      BLOG.THEME
-    )
-  }, [route])
+// 优化的App组件
+const MyApp = ({ Component, pageProps, router }) => {
+  const routerInfo = useRouter()
+  const PERFORMANCE = siteConfig('PERFORMANCE')
+  const DEBUG = siteConfig('DEBUG')
 
-  // 整体布局
-  const GLayout = useCallback(
-    props => {
-      const Layout = getBaseLayoutByTheme(theme)
-      return <Layout {...props} />
-    },
-    [theme]
-  )
+  // 预加载常用资源
+  useEffect(() => {
+    // 预连接到关键域名
+    const preconnectLinks = [
+      'https://www.googletagmanager.com',
+      'https://www.google-analytics.com',
+      'https://fonts.googleapis.com',
+      'https://notion.so',
+      'https://notion.site'
+    ]
 
-  const enableClerk = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-  const content = (
-    <GlobalContextProvider {...pageProps}>
-      <GLayout {...pageProps}>
-        <SEO {...pageProps} />
-        <Component {...pageProps} />
-      </GLayout>
-      <ExternalPlugins {...pageProps} />
-    </GlobalContextProvider>
-  )
+    preconnectLinks.forEach(href => {
+      const link = document.createElement('link')
+      link.rel = 'preconnect'
+      link.href = href
+      document.head.appendChild(link)
+    })
+
+    // 预加载关键资源
+    const preloadLinks = [
+      { href: '/fonts/inter-var.woff2', as: 'font', type: 'font/woff2', crossOrigin: 'anonymous' }
+    ]
+
+    preloadLinks.forEach(resource => {
+      const link = document.createElement('link')
+      link.rel = 'preload'
+      Object.keys(resource).forEach(attr => {
+        link.setAttribute(attr, resource[attr])
+      })
+      document.head.appendChild(link)
+    })
+  }, [])
+
   return (
-    <>
-      {enableClerk ? (
-        <ClerkProvider localization={zhCN}>{content}</ClerkProvider>
-      ) : (
-        content
-      )}
-    </>
+    <CacheProvider>
+      <GlobalContextProvider {...pageProps}>
+        <div id='root' className='min-h-screen dark:bg-black'>
+          <LoadingProgress />
+          <Component {...pageProps} key={router.route} />
+          {siteConfig('DEBUG', false) && <DebugPanel />}
+          {siteConfig('PERFORMANCE', false) && <PerformancePanel />}
+          {siteConfig('ANALYTICS_VERCEL', false) && <Analytics />}
+        </div>
+        {siteConfig('ENABLE_WEB_VITALS', false) && <PerformanceMonitor />}
+      </GlobalContextProvider>
+    </CacheProvider>
   )
 }
 

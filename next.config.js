@@ -89,7 +89,7 @@ const nextConfig = {
     : process.env.NEXT_BUILD_STANDALONE === 'true'
       ? 'standalone'
       : undefined,
-  staticPageGenerationTimeout: 120,
+  staticPageGenerationTimeout: 180, // 增加超时时间以应对复杂页面
 
   // 性能优化配置
   compress: true,
@@ -129,7 +129,8 @@ const nextConfig = {
       'source.unsplash.com',
       'p1.qhimg.com',
       'webmention.io',
-      'ko-fi.com'
+      'ko-fi.com',
+      'cdn.cnbetter.top' // 添加自定义CDN域名
     ],
     // 图片加载器优化
     loader: 'default',
@@ -218,57 +219,11 @@ const nextConfig = {
                 key: 'Access-Control-Allow-Headers',
                 value:
                   'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version'
-              }
-              // 安全头部 相关配置，谨慎开启
-            //   { key: 'X-Frame-Options', value: 'DENY' },
-            //   { key: 'X-Content-Type-Options', value: 'nosniff' },
-            //   { key: 'X-XSS-Protection', value: '1; mode=block' },
-            //   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-            //   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-            //   {
-            //     key: 'Strict-Transport-Security',
-            //     value: 'max-age=31536000; includeSubDomains; preload'
-            //   },
-            //   {
-            //     key: 'Content-Security-Policy',
-            //     value: [
-            //       "default-src 'self'",
-            //       "script-src 'self' 'unsafe-inline' 'unsafe-eval' *.googleapis.com *.gstatic.com *.google-analytics.com *.googletagmanager.com",
-            //       "style-src 'self' 'unsafe-inline' *.googleapis.com *.gstatic.com",
-            //       "img-src 'self' data: blob: *.notion.so *.unsplash.com *.githubusercontent.com *.gravatar.com",
-            //       "font-src 'self' *.googleapis.com *.gstatic.com",
-            //       "connect-src 'self' *.google-analytics.com *.googletagmanager.com",
-            //       "frame-src 'self' *.youtube.com *.vimeo.com",
-            //       "object-src 'none'",
-            //       "base-uri 'self'",
-            //       "form-action 'self'"
-            //     ].join('; ')
-            //   },
-
-            //   // CORS 配置（更严格）
-            //   { key: 'Access-Control-Allow-Credentials', value: 'false' },
-            //   {
-            //     key: 'Access-Control-Allow-Origin',
-            //     value: process.env.NODE_ENV === 'production'
-            //       ? siteConfig('LINK') || 'https://yourdomain.com'
-            //       : '*'
-            //   },
-            //   { key: 'Access-Control-Max-Age', value: '86400' }
+              },
+              // 性能优化头部
+              { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' } // 静态资源缓存一年
             ]
-          },
-            //   {
-            //     source: '/api/:path*',
-            //     headers: [
-            //       // API 特定的安全头部
-            //       { key: 'X-Frame-Options', value: 'DENY' },
-            //       { key: 'X-Content-Type-Options', value: 'nosniff' },
-            //       { key: 'Cache-Control', value: 'no-store, max-age=0' },
-            //       {
-            //         key: 'Access-Control-Allow-Methods',
-            //         value: 'GET,POST,PUT,DELETE,OPTIONS'
-            //       }
-            //     ]
-            //   }
+          }
         ]
       },
   webpack: (config, { dev, isServer }) => {
@@ -303,8 +258,16 @@ const nextConfig = {
               chunks: 'all',
               enforce: true,
             },
+            // 单独提取核心库以提高缓存效率
+            react: {
+              test: /[\\/]node_modules[\\/](react|react-dom|next)[\\/]/,
+              name: 'react',
+              chunks: 'all',
+            },
           },
         },
+        // 启用运行时代码拆分
+        runtimeChunk: 'single',
       }
     }
 
@@ -319,12 +282,22 @@ const nextConfig = {
       'node_modules'
     ]
 
+    // 添加 WebAssembly 支持
+    config.experiments = {
+      ...config.experiments,
+      asyncWebAssembly: true,
+    }
+
     return config
   },
   experimental: {
     scrollRestoration: true,
     // 性能优化实验性功能
-    optimizePackageImports: ['@heroicons/react', 'lodash']
+    optimizePackageImports: ['@heroicons/react', 'lodash', 'moment', 'date-fns'],
+    // 启用 React 18 的新功能
+    reactRoot: true,
+    // 启用 webpack 5 的新功能
+    webpackBuildWorker: true,
   },
   exportPathMap: function (
     defaultPathMap,
