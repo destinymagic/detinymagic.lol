@@ -171,7 +171,7 @@ const LayoutSearch = props => {
   return <LayoutPostList {...props} />
 }
 
- function groupArticlesByYearArray(articles) {
+function groupArticlesByYearArray(articles) {
   const grouped = {};
 
   for (const article of articles) {

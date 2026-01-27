@@ -86,6 +86,34 @@ const Style = () => {
         -ms-overflow-style: none; /* IE and Edge */
         scrollbar-width: none; /* Firefox */
       }
+
+      /* 目录自定义滚动条 */
+      .catalog-list::-webkit-scrollbar {
+        width: 3px;
+      }
+      .catalog-list::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .catalog-list::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 3px;
+      }
+      .catalog-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.25);
+      }
+      .dark .catalog-list::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      .dark .catalog-list::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* 目录容器样式 */
+      .catalog-wrapper {
+        padding: 0.5rem 0;
+      }
+      .dark .catalog-wrapper {
+      }
     `}</style>
   )
 }
