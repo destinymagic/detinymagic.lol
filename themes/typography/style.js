@@ -76,8 +76,8 @@ const Style = () => {
         text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
       }
 
-      /* 深色模式下标题区域左侧竖线使用终端绿色 */
-      .dark #theme-typography header {
+      /* 深色模式下网站标题区域左侧竖线使用终端绿色 */
+      .dark #theme-typography #site-header {
         border-color: #00FF00 !important;
         position: relative;
       }
@@ -88,11 +88,11 @@ const Style = () => {
         51%, 100% { opacity: 0; }
       }
 
-      /* 深色模式下标题区域hover显示闪烁光标 */
-      .dark #theme-typography header::after {
+      /* 深色模式下网站标题区域hover显示闪烁光标 */
+      .dark #theme-typography #site-header::after {
         content: '';
         position: absolute;
-        bottom: 0;
+        bottom: 1rem; /* 与 pb-8 对齐 */
         left: 20px;
         width: 0.2em;
         height: 1em;
@@ -101,15 +101,17 @@ const Style = () => {
         transition: opacity 0.2s;
       }
 
-      .dark #theme-typography header:hover::after {
+      .dark #theme-typography #site-header:hover::after {
         opacity: 1;
         animation: terminal-cursor-blink 1s step-end infinite;
         box-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
       }
 
-      /* 移除原有的hover背景色变化 */
-      .dark #theme-typography header:hover {
+      /* 深色模式下取消hover浮动效果和背景色变化 */
+      .dark #theme-typography #site-header:hover {
         background-color: transparent !important;
+        padding-top: 0 !important;
+        padding-bottom: 2rem !important;
       }
 
       /* 深色模式下目录当前项使用终端绿色 */
@@ -157,6 +159,33 @@ const Style = () => {
       }
       .dark .catalog-list::-webkit-scrollbar-thumb:hover {
         background: rgba(255, 255, 255, 0.25);
+      }
+
+      /* 深色模式下代码块滚动条 */
+      .dark pre::-webkit-scrollbar,
+      .dark .notion-code::-webkit-scrollbar {
+        height: 6px;
+        width: 6px;
+      }
+      .dark pre::-webkit-scrollbar-track,
+      .dark .notion-code::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+      }
+      .dark pre::-webkit-scrollbar-thumb,
+      .dark .notion-code::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+      }
+      .dark pre::-webkit-scrollbar-thumb:hover,
+      .dark .notion-code::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.5);
+      }
+      /* Firefox */
+      .dark pre,
+      .dark .notion-code {
+        scrollbar-width: thin;
+        scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.1);
       }
 
       /* 目录容器样式 */
