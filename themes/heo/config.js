@@ -14,9 +14,9 @@ const CONFIG = {
   HEO_HERO_BODY_REVERSE: false,
 
   // 英雄区(首页顶部大卡)
-  HEO_HERO_TITLE_1: '游戏资源分享',
+  HEO_HERO_TITLE_1: '👏🏻欢迎来到0元购游戏网',
   HEO_HERO_TITLE_2: '',
-  HEO_HERO_TITLE_3: '0y.games',
+  HEO_HERO_TITLE_3: '这里分享最新最热门PC、Switch游戏资源',
   HEO_HERO_TITLE_4: '全新上线',
   HEO_HERO_TITLE_5: '「近期推荐」地平线：西之绝境 全网首发',
   HEO_HERO_TITLE_LINK: 'https://www.0y.games/article/Horizon-ForbiddenWest',

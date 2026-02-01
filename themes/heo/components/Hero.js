@@ -84,8 +84,8 @@ function Banner(props) {
       onClick={handleClickBanner}
       className="hidden xl:flex xl:flex-col group h-full bg-white dark:bg-[#1e1e1e] rounded-xl border dark:border-gray-700 mb-3 relative overflow-hidden"
     >
-      <div id="banner-title" className="flex flex-col absolute top-10 left-10">
-        <div className="text-4xl font-bold mb-3  dark:text-white">
+      <div id="banner-title" className="z-10 flex flex-col absolute top-10 left-10">
+        <div className="text-4xl font-bold mb-3  dark:text-white" style={{ WebkitTextStroke: '1px black' }}>
           {siteConfig('HEO_HERO_TITLE_1', null, CONFIG)}
           <br />
           {siteConfig('HEO_HERO_TITLE_2', null, CONFIG)}
@@ -103,7 +103,7 @@ function Banner(props) {
         id="banner-cover"
         style={{ backdropFilter: 'blur(15px)' }}
         className={
-          'rounded-xl overflow-hidden opacity-0 group-hover:opacity-100 duration-300 transition-all bg-[#4259efdd] dark:bg-[#dca846] dark:text-white cursor-pointer absolute w-full h-full top-0 flex justify-start items-center'
+          'z-20 rounded-xl overflow-hidden opacity-0 group-hover:opacity-100 duration-300 transition-all bg-[#4259efdd] dark:bg-[#dca846] dark:text-white cursor-pointer absolute w-full h-full top-0 flex justify-start items-center'
         }
       >
         <div className="ml-12 -translate-x-32 group-hover:translate-x-0 duration-300 transition-all ease-in">
@@ -131,9 +131,8 @@ function TagsGroupBar() {
           return (
             <div key={index} className="tags-group-icon-pair ml-6 select-none">
               <div
-                style={{ background: g.color_1 }}
                 className={
-                  'tags-group-icon w-28 h-28 rounded-3xl flex items-center justify-center text-white text-lg font-bold shadow-md'
+                  'tags-group-icon w-28 h-28 rounded-3xl flex items-center justify-center text-white text-lg font-bold shadow-md bg-white dark:bg-[#1e1e1e]'
                 }
               >
                 <LazyImage
@@ -144,9 +143,8 @@ function TagsGroupBar() {
                 />
               </div>
               <div
-                style={{ background: g.color_2 }}
                 className={
-                  'tags-group-icon  mt-5 w-28 h-28 rounded-3xl flex items-center justify-center text-white text-lg font-bold shadow-md'
+                  'tags-group-icon  mt-5 w-28 h-28 rounded-3xl flex items-center justify-center text-white text-lg font-bold shadow-md bg-white dark:bg-[#1e1e1e]'
                 }
               >
                 <LazyImage
