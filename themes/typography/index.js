@@ -106,7 +106,7 @@ const LayoutBase = props => {
           </div>
 
           {/* 右侧导航和页脚 - 固定不滚动 */}
-          <div className='hidden md:flex md:flex-col md:flex-shrink-0 md:h-[100vh] sticky top-20'>
+          <div className='hidden md:flex md:flex-col md:flex-shrink-0 md:h-[100vh] sticky top-20 md:max-w-[200px] md:min-w-0 overflow-hidden'>
             <NavBar {...props} />
             <Footer {...props} />
           </div>
@@ -171,7 +171,7 @@ const LayoutSearch = props => {
   return <LayoutPostList {...props} />
 }
 
- function groupArticlesByYearArray(articles) {
+function groupArticlesByYearArray(articles) {
   const grouped = {};
 
   for (const article of articles) {
@@ -232,7 +232,7 @@ const LayoutSlug = props => {
 
       {!lock && post && (
         <div
-          className={`px-5 pt-3 ${fullWidth ? '' : 'xl:max-w-4xl 2xl:max-w-6xl'}`}>
+          className={`px-5 pt-3 ${fullWidth ? '' : 'xl:max-w-6xl 2xl:max-w-screen-2xl'}`}>
           {/* 文章信息 */}
           <ArticleInfo post={post} />
 
