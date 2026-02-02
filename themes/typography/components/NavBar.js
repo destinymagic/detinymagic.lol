@@ -21,7 +21,7 @@ export default function NavBar(props) {
 
   return (
     <div className='flex flex-col justify-between md:mt-20 md:h-[70vh]'>
-      <header id='site-header' className='w-fit self-center md:self-start md:pb-8 md:border-l-2 dark:md:border-white dark:text-white md:border-[var(--primary-color)] text-[var(--primary-color)] md:[writing-mode:vertical-lr] px-4 md:hover:bg-[var(--primary-color)] dark:md:hover:bg-white md:hover:text-white dark:md:hover:text-[var(--primary-color)] ease-in-out duration-700 md:hover:pt-4 md:hover:pb-4 mb-2'>
+      <header id='site-header' className='w-fit self-center md:self-start md:pb-8 md:border-l-2 dark:md:border-white dark:text-white md:border-[var(--primary-color)] text-[var(--primary-color)] md:[writing-mode:vertical-lr] px-4 md:hover:bg-[var(--primary-color)] md:hover:text-white md:hover:pt-4 md:hover:pb-4 dark:md:hover:pt-0 dark:md:hover:pb-8 ease-in-out duration-700 mb-2'>
         <SmartLink href='/'>
           <div className='flex flex-col-reverse md:flex-col items-center md:items-start'>
             <div className='font-bold text-4xl text-center' id='blog-name'>
