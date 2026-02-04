@@ -19,7 +19,7 @@ export default function Header (props) {
                     <div className='flex space-x-6'>
                         <div className='hover:rotate-45 hover:scale-125 transform duration-200 cursor-pointer justify-center items-center flex'>
                             <LazyImage priority={true} 
-                            src={siteConfig('AVATAR', null, CONFIG) || siteInfo?.icon} // 优先本地头像  //src={siteInfo?.icon} 
+                            src="/02.png" // 优先本地头像  //src={siteInfo?.icon} 
                             className='rounded-full' width={100} height={100} alt={siteConfig('AUTHOR')} />
                         </div>
 
